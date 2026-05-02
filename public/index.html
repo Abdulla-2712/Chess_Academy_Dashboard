@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Chess Trainer Dashboard — Today's coaching sessions at a glance">
+  <title>Dashboard — Chess Trainer</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <a href="/index.html" class="logo">
+        <div class="icon">♞</div>
+        <span>Chess Trainer</span>
+      </a>
+      <div class="user-menu">
+        <span class="user-name" id="coach-name"></span>
+        <button class="logout-btn" id="logout-btn">Logout</button>
+      </div>
+    </div>
+
+    <!-- Date Header -->
+    <div class="date-header">
+      <div class="day-name" id="day-name"></div>
+      <div class="date-full" id="date-full"></div>
+    </div>
+
+    <!-- Today's Sessions -->
+    <div id="sessions-container">
+      <div class="loading-container">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session Status Modal -->
+  <div class="modal-overlay" id="status-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Update Session</h2>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <div id="modal-session-info" style="margin-bottom: var(--space-lg);"></div>
+      <div style="display: flex; flex-direction: column; gap: var(--space-sm);">
+        <button class="btn btn-success btn-block" onclick="updateStatus('confirmed')">✅ Confirmed — I did this session</button>
+        <button class="btn btn-warning btn-block" onclick="updateStatus('excused_absence')">🤒 Excused Absence</button>
+        <button class="btn btn-danger btn-block" onclick="updateStatus('no_show')">❌ No Show — missed without excuse</button>
+        <button class="btn btn-info btn-block" onclick="updateStatus('substitute_given')">🔄 Substitute Given — someone covered</button>
+      </div>
+      <div class="form-group mt-lg">
+        <label for="session-notes">Session Notes</label>
+        <textarea id="session-notes" class="form-control" placeholder="Add a note about this session..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav bottom-nav-five">
+    <a href="/index.html" class="active">
+      <span class="nav-icon">🏠</span>
+      <span>Today</span>
+    </a>
+    <a href="/groups.html">
+      <span class="nav-icon">👥</span>
+      <span>Groups</span>
+    </a>
+    <a href="/messages.html">
+      <span class="nav-icon">📚</span>
+      <span>Messages</span>
+    </a>
+    <a href="/earnings.html">
+      <span class="nav-icon">💰</span>
+      <span>Earnings</span>
+    </a>
+    <a href="/holidays.html">
+      <span class="nav-icon">🗓️</span>
+      <span>Holidays</span>
+    </a>
+  </nav>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

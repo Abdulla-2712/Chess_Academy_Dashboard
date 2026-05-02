@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Chess Trainer — Manage academy holidays and session rescheduling">
+  <title>Holidays — Chess Trainer</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <a href="/index.html" class="logo">
+        <div class="icon">♞</div>
+        <span>Chess Trainer</span>
+      </a>
+      <div class="user-menu">
+        <span class="user-name" id="coach-name"></span>
+        <button class="logout-btn" id="logout-btn">Logout</button>
+      </div>
+    </div>
+
+    <h1 style="margin-bottom: var(--space-lg);">🗓️ Academy Holidays</h1>
+
+    <!-- Alert -->
+    <div id="holiday-alert" class="alert"></div>
+
+    <!-- Add Holiday Form -->
+    <div class="section">
+      <div class="section-title">Add New Holiday</div>
+      <form id="holiday-form" style="display:flex; flex-direction:column; gap:var(--space-md);">
+        <div class="form-group" style="margin-bottom:0;">
+          <label for="holiday-name">Holiday Name</label>
+          <input type="text" id="holiday-name" class="form-control" placeholder="e.g. Eid Al-Adha" required>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label for="holiday-start">Start Date</label>
+          <input type="date" id="holiday-start" class="form-control" required>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label for="holiday-end">End Date</label>
+          <input type="date" id="holiday-end" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="save-holiday-btn">
+          Save Holiday &amp; Shift Sessions
+        </button>
+      </form>
+    </div>
+
+    <!-- Holidays List -->
+    <div class="section">
+      <div class="section-title">Saved Holidays</div>
+      <div id="holidays-list">
+        <div class="loading-container"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav bottom-nav-five">
+    <a href="/index.html">
+      <span class="nav-icon">🏠</span>
+      <span>Today</span>
+    </a>
+    <a href="/groups.html">
+      <span class="nav-icon">👥</span>
+      <span>Groups</span>
+    </a>
+    <a href="/messages.html">
+      <span class="nav-icon">📚</span>
+      <span>Messages</span>
+    </a>
+    <a href="/earnings.html">
+      <span class="nav-icon">💰</span>
+      <span>Earnings</span>
+    </a>
+    <a href="/holidays.html" class="active">
+      <span class="nav-icon">🗓️</span>
+      <span>Holidays</span>
+    </a>
+  </nav>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/holidays.js"></script>
+</body>
+</html>

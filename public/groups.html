@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Chess Trainer — Manage your coaching groups and track progress">
+  <title>Groups — Chess Trainer</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <a href="/index.html" class="logo">
+        <div class="icon">♞</div>
+        <span>Chess Trainer</span>
+      </a>
+      <div class="user-menu">
+        <span class="user-name" id="coach-name"></span>
+        <button class="logout-btn" id="logout-btn">Logout</button>
+      </div>
+    </div>
+
+    <h1 style="margin-bottom: var(--space-lg);">My Groups</h1>
+
+    <div id="alert" class="alert"></div>
+
+    <!-- Group List -->
+    <div id="groups-container">
+      <div class="loading-container">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAB to add group -->
+  <button class="fab" id="fab-add" title="Add new group">+</button>
+
+  <!-- Add Group Modal -->
+  <div class="modal-overlay" id="add-group-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>New Group</h2>
+        <button class="modal-close" onclick="closeAddModal()">&times;</button>
+      </div>
+
+      <div id="add-alert" class="alert"></div>
+
+      <form id="add-group-form">
+        <div class="form-group">
+          <label for="group-name">Group Name (optional)</label>
+          <input type="text" id="group-name" class="form-control" placeholder="e.g. Ahmed's group">
+        </div>
+        <div class="form-group">
+          <label for="group-level">Level</label>
+          <select id="group-level" class="form-control" required>
+            <option value="">Select level...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="group-start-date">Start Date</label>
+          <input type="date" id="group-start-date" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="group-day">Day of Week</label>
+          <input type="text" id="group-day" class="form-control" placeholder="Auto-filled from date" readonly>
+        </div>
+        <div class="form-group">
+          <label for="group-time">Time Slot</label>
+          <input type="time" id="group-time" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="group-whatsapp-link">WhatsApp Group Link</label>
+          <input
+            type="url"
+            id="group-whatsapp-link"
+            class="form-control"
+            placeholder="e.g. https://chat.whatsapp.com/xxxxxxxx"
+          >
+        </div>
+        <div class="form-group">
+          <label for="group-notes">Notes (optional)</label>
+          <textarea id="group-notes" class="form-control" placeholder="Any notes about this group..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Create Group</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Substitute Session Modal -->
+  <div class="modal-overlay" id="sub-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Add Substitute Session</h2>
+        <button class="modal-close" onclick="closeSubModal()">&times;</button>
+      </div>
+      <p class="text-muted mb-md" style="font-size: 0.85rem;">I covered another coach's session</p>
+
+      <div id="sub-alert" class="alert"></div>
+
+      <form id="sub-form">
+        <div class="form-group">
+          <label for="sub-level">Level</label>
+          <select id="sub-level" class="form-control" required>
+            <option value="">Select level...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="sub-date">Session Date</label>
+          <input type="date" id="sub-date" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="sub-time">Session Time</label>
+          <input type="time" id="sub-time" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="sub-session-num">Session Number (1–8)</label>
+          <input type="number" id="sub-session-num" class="form-control" min="1" max="8" value="1">
+        </div>
+        <div class="form-group">
+          <label for="sub-notes">Notes</label>
+          <textarea id="sub-notes" class="form-control" placeholder="Who did you cover for?"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Add Substitute</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav bottom-nav-five">
+    <a href="/index.html">
+      <span class="nav-icon">🏠</span>
+      <span>Today</span>
+    </a>
+    <a href="/groups.html" class="active">
+      <span class="nav-icon">👥</span>
+      <span>Groups</span>
+    </a>
+    <a href="/messages.html">
+      <span class="nav-icon">📚</span>
+      <span>Messages</span>
+    </a>
+    <a href="/earnings.html">
+      <span class="nav-icon">💰</span>
+      <span>Earnings</span>
+    </a>
+    <a href="/holidays.html">
+      <span class="nav-icon">🗓️</span>
+      <span>Holidays</span>
+    </a>
+  </nav>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/groups.js"></script>
+</body>
+</html>

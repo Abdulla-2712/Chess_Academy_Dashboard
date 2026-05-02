@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Chess Trainer — Track your earnings, payouts, and deductions">
+  <title>Earnings — Chess Trainer</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <a href="/index.html" class="logo">
+        <div class="icon">♞</div>
+        <span>Chess Trainer</span>
+      </a>
+      <div class="user-menu">
+        <span class="user-name" id="coach-name"></span>
+        <button class="logout-btn" id="logout-btn">Logout</button>
+      </div>
+    </div>
+
+    <h1 style="margin-bottom: var(--space-lg);">Earnings</h1>
+
+    <div id="earnings-alert" class="alert"></div>
+
+    <!-- Net Summary -->
+    <div id="summary-container">
+      <div class="loading-container">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- Earnings Sections -->
+    <div id="earnings-container"></div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav bottom-nav-five">
+    <a href="/index.html">
+      <span class="nav-icon">🏠</span>
+      <span>Today</span>
+    </a>
+    <a href="/groups.html">
+      <span class="nav-icon">👥</span>
+      <span>Groups</span>
+    </a>
+    <a href="/messages.html">
+      <span class="nav-icon">📚</span>
+      <span>Messages</span>
+    </a>
+    <a href="/earnings.html" class="active">
+      <span class="nav-icon">💰</span>
+      <span>Earnings</span>
+    </a>
+    <a href="/holidays.html">
+      <span class="nav-icon">🗓️</span>
+      <span>Holidays</span>
+    </a>
+  </nav>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/earnings.js"></script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Chess Trainer — Group detail and session management">
+  <title>Group Detail — Chess Trainer</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <a href="/groups.html" class="logo" style="font-size: 0.9rem;">
+        ← Back to Groups
+      </a>
+      <div class="user-menu">
+        <button class="logout-btn" id="logout-btn">Logout</button>
+      </div>
+    </div>
+
+    <!-- Group Info -->
+    <div id="group-info">
+      <div class="loading-container">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- Sessions List -->
+    <div class="section mt-lg">
+      <div class="section-title">Sessions</div>
+      <div id="sessions-list">
+        <div class="loading-container">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session Status Modal -->
+  <div class="modal-overlay" id="status-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Update Session</h2>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <div id="modal-session-info" style="margin-bottom: var(--space-lg);"></div>
+      <div style="display: flex; flex-direction: column; gap: var(--space-sm);">
+        <button class="btn btn-success btn-block" onclick="updateSessionStatus('confirmed')">✅ Confirmed</button>
+        <button class="btn btn-warning btn-block" onclick="updateSessionStatus('excused_absence')">🤒 Excused Absence</button>
+        <button class="btn btn-danger btn-block" onclick="updateSessionStatus('no_show')">❌ No Show</button>
+        <button class="btn btn-info btn-block" onclick="updateSessionStatus('substitute_given')">🔄 Substitute Given</button>
+      </div>
+      <div class="form-group mt-lg">
+        <label for="session-notes">Notes</label>
+        <textarea id="session-notes" class="form-control" placeholder="Add a note..."></textarea>
+      </div>
+      <button class="btn btn-ghost btn-block mt-md" onclick="saveNotes()">Save Notes Only</button>
+    </div>
+  </div>
+
+  <!-- Session Message Modal (auto-opens after confirm) -->
+  <div class="modal-overlay" id="session-message-modal" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="session-message-title">Session Message</h2>
+        <button class="modal-close" id="session-message-close">&times;</button>
+      </div>
+      <div id="session-message-body">
+        <div class="loading-container">
+          <div class="spinner"></div>
+        </div>
+      </div>
+      <div class="session-message-footer">
+        <button class="btn btn-primary btn-block" id="btn-open-whatsapp" type="button" title="">
+          Open WhatsApp Group 💬
+        </button>
+        <button class="btn btn-ghost btn-block" id="btn-close-session-message" type="button">
+          Close ✕
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Group Modal -->
+  <div class="modal-overlay" id="edit-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Edit Group</h2>
+        <button class="modal-close" onclick="closeEditModal()">&times;</button>
+      </div>
+      <form id="edit-form">
+        <div class="form-group">
+          <label for="edit-name">Group Name</label>
+          <input type="text" id="edit-name" class="form-control" placeholder="e.g. Ahmed's group">
+        </div>
+        <div class="form-group">
+          <label for="edit-level">Level</label>
+          <select id="edit-level" class="form-control">
+            <option value="">— Keep current —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-start-date">Start Date</label>
+          <input type="date" id="edit-start-date" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="edit-day">Day of Week</label>
+          <select id="edit-day" class="form-control">
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-time">Time Slot</label>
+          <input type="time" id="edit-time" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="edit-whatsapp-link">WhatsApp Group Link</label>
+          <input
+            type="url"
+            id="edit-whatsapp-link"
+            class="form-control"
+            placeholder="e.g. https://chat.whatsapp.com/xxxxxxxx"
+          >
+        </div>
+        <div class="form-group">
+          <label for="edit-status">Status</label>
+          <select id="edit-status" class="form-control">
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-notes">Notes</label>
+          <textarea id="edit-notes" class="form-control" placeholder="Any notes..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+      </form>
+
+      <div style="margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 1px solid var(--border);">
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: var(--space-sm);">Danger Zone</p>
+        <button class="btn btn-danger btn-block" onclick="deleteGroup()" type="button">
+          🗑️ Delete This Group
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-toast" id="app-toast"></div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav bottom-nav-five">
+    <a href="/index.html">
+      <span class="nav-icon">🏠</span>
+      <span>Today</span>
+    </a>
+    <a href="/groups.html" class="active">
+      <span class="nav-icon">👥</span>
+      <span>Groups</span>
+    </a>
+    <a href="/messages.html">
+      <span class="nav-icon">📚</span>
+      <span>Messages</span>
+    </a>
+    <a href="/earnings.html">
+      <span class="nav-icon">💰</span>
+      <span>Earnings</span>
+    </a>
+    <a href="/holidays.html">
+      <span class="nav-icon">🗓️</span>
+      <span>Holidays</span>
+    </a>
+  </nav>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/group-detail.js"></script>
+</body>
+</html>

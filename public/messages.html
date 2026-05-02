@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Chess Trainer — Session messages library for coaches">
+  <title>Messages Library — Chess Trainer</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <div class="top-bar">
+      <a href="/index.html" class="logo">
+        <div class="icon">♞</div>
+        <span>Chess Trainer</span>
+      </a>
+      <div class="user-menu">
+        <span class="user-name" id="coach-name"></span>
+        <button class="logout-btn" id="logout-btn">Logout</button>
+      </div>
+    </div>
+
+    <h1 style="margin-bottom: var(--space-md);">📚 Messages Library</h1>
+    <p class="text-muted" style="font-size: 0.85rem; margin-bottom: var(--space-lg);">
+      Pick a level and session to view or add training messages.
+    </p>
+
+    <div id="messages-alert" class="alert"></div>
+
+    <div class="section">
+      <div class="section-title">Step 1 — Level</div>
+      <div id="level-grid" class="level-grid">
+        <div class="loading-container"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <div id="session-section" class="section" style="display: none;">
+      <div class="section-title">Step 2 — Session</div>
+      <div id="session-grid" class="session-grid"></div>
+    </div>
+
+    <div id="messages-section" class="section" style="display: none;">
+      <div class="messages-section-header">
+        <div class="section-title" style="margin-bottom: 0;">Step 3 — Messages</div>
+        <button type="button" class="btn btn-primary btn-sm" id="btn-add-message">+ Add Message</button>
+      </div>
+      <div id="messages-list">
+        <div class="empty-state" style="padding: var(--space-lg) 0;">
+          <div class="empty-text">Loading…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Message Modal -->
+  <div class="modal-overlay" id="message-form-modal">
+    <div class="modal modal-wide">
+      <div class="modal-header">
+        <h2 id="message-form-title">Add Message</h2>
+        <button type="button" class="modal-close" id="message-form-close">&times;</button>
+      </div>
+      <div id="message-form-alert" class="alert"></div>
+      <form id="message-form">
+        <input type="hidden" id="message-edit-id" value="">
+        <div class="form-group">
+          <label for="message-title">Title (optional)</label>
+          <input type="text" id="message-title" class="form-control" placeholder="Short label">
+        </div>
+        <div class="form-group">
+          <label for="message-text">Message text</label>
+          <textarea id="message-text" class="form-control message-textarea" required placeholder="Training message…"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="message-image">Image (jpg, png, gif, webp — max 5MB)</label>
+          <input type="file" id="message-image" class="form-control" accept="image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp">
+          <div id="message-image-preview-wrap" class="message-image-preview-wrap" style="display: none;">
+            <img id="message-image-preview" alt="Preview">
+            <button type="button" class="btn btn-sm btn-ghost" id="message-remove-image-btn">Remove image</button>
+          </div>
+          <p id="message-current-image-note" class="text-muted" style="font-size: 0.8rem; display: none;"></p>
+        </div>
+        <div class="form-group">
+          <label>Visibility</label>
+          <div class="visibility-toggle" role="group" aria-label="Visibility">
+            <button type="button" class="visibility-btn active" data-public="false" id="vis-private">🔒 Private</button>
+            <button type="button" class="visibility-btn" data-public="true" id="vis-public">🌍 Public</button>
+          </div>
+          <input type="hidden" id="message-is-public" value="false">
+        </div>
+        <div class="form-actions-row">
+          <button type="button" class="btn btn-ghost" id="message-form-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="message-form-save">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Full-size image -->
+  <div class="modal-overlay" id="image-lightbox">
+    <div class="modal modal-image-lightbox">
+      <button type="button" class="modal-close" id="image-lightbox-close">&times;</button>
+      <img id="image-lightbox-img" alt="Full size">
+    </div>
+  </div>
+
+  <div id="app-toast" class="app-toast" role="status" aria-live="polite"></div>
+
+  <nav class="bottom-nav bottom-nav-five">
+    <a href="/index.html">
+      <span class="nav-icon">🏠</span>
+      <span>Today</span>
+    </a>
+    <a href="/groups.html">
+      <span class="nav-icon">👥</span>
+      <span>Groups</span>
+    </a>
+    <a href="/messages.html" class="active">
+      <span class="nav-icon">📚</span>
+      <span>Messages</span>
+    </a>
+    <a href="/earnings.html">
+      <span class="nav-icon">💰</span>
+      <span>Earnings</span>
+    </a>
+    <a href="/holidays.html">
+      <span class="nav-icon">🗓️</span>
+      <span>Holidays</span>
+    </a>
+  </nav>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/messages.js"></script>
+</body>
+</html>
