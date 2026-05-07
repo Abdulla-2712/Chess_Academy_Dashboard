@@ -56,25 +56,46 @@ function downloadImage(imageUrl) {
 }
 
 async function copyAll(messageText, imageUrl) {
-  const abs = absoluteMediaUrl(imageUrl);
   try {
-    const imageResponse = await fetch(abs);
-    const imageBlob = await imageResponse.blob();
+    const absoluteUrl = imageUrl.startsWith('http')
+      ? imageUrl
+      : window.location.origin + imageUrl;
+
+    const response = await fetch(absoluteUrl);
+    if (!response.ok) throw new Error('Failed to fetch image');
+
+    const blob = await response.blob();
+
+    // Convert to PNG for maximum clipboard compatibility
+    let finalBlob = blob;
+    if (blob.type !== 'image/png') {
+      const bitmap = await createImageBitmap(blob);
+      const canvas = document.createElement('canvas');
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(bitmap, 0, 0);
+      finalBlob = await new Promise((resolve) =>
+        canvas.toBlob(resolve, 'image/png')
+      );
+    }
+
     await navigator.clipboard.write([
       new ClipboardItem({
         'text/plain': new Blob([messageText], { type: 'text/plain' }),
-        [imageBlob.type]: imageBlob,
+        'image/png': finalBlob
       }),
     ]);
-    showToast('Text and image copied! ✅');
+    showToast('Text and image copied! ✅ Paste into WhatsApp');
   } catch (err) {
+    console.error('Copy all failed:', err);
     try {
       await navigator.clipboard.writeText(messageText);
     } catch (_) {
       /* still try download */
     }
     downloadImage(imageUrl);
-    showToast('Text copied + image downloading! ✅');
+    showToast('Text copied + image downloading ⬇️');
   }
 }
 
@@ -87,16 +108,71 @@ async function copyText(messageText) {
   }
 }
 
-async function copyImage(imageUrl) {
-  const abs = absoluteMediaUrl(imageUrl);
+async function sendToWhatsAppGroup(btn, groupId, messageId) {
+  const label = 'Send to WhatsApp Group 📤';
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
   try {
-    const imageResponse = await fetch(abs);
-    const imageBlob = await imageResponse.blob();
-    await navigator.clipboard.write([new ClipboardItem({ [imageBlob.type]: imageBlob })]);
-    showToast('Image copied! ✅');
+    const res = await fetch('/api/whatsapp/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${API.getToken()}`,
+      },
+      body: JSON.stringify({ group_id: groupId, message_id: messageId }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401) {
+      API.logout();
+      return;
+    }
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    if (data.success) {
+      showToast('Message sent to WhatsApp group! ✅');
+      btn.textContent = 'Sent ✅';
+    } else {
+      throw new Error(data.error || 'Send failed');
+    }
   } catch (err) {
+    showToast('Failed to send: ' + err.message + ' ❌');
+    btn.disabled = false;
+    btn.textContent = label;
+  }
+}
+
+async function copyImage(imageUrl) {
+  try {
+    // Must use absolute URL
+    const absoluteUrl = imageUrl.startsWith('http')
+      ? imageUrl
+      : window.location.origin + (imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`);
+
+    const response = await fetch(absoluteUrl);
+
+    if (!response.ok) throw new Error('Failed to fetch image');
+
+    const blob = await response.blob();
+
+    // Force PNG for maximum clipboard compatibility
+    let finalBlob = blob;
+    if (blob.type !== 'image/png') {
+      const bitmap = await createImageBitmap(blob);
+      const canvas = document.createElement('canvas');
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(bitmap, 0, 0);
+      finalBlob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+    }
+
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': finalBlob })]);
+
+    showToast('Image copied to clipboard! ✅');
+  } catch (err) {
+    console.error('Copy image failed:', err);
     downloadImage(imageUrl);
-    showToast('Image downloading! ✅');
+    showToast('Could not copy — image downloading instead ⬇️');
   }
 }
 
@@ -334,6 +410,9 @@ async function fetchSessionMessages(levelId, sessionNum) {
       return;
     }
 
+    const canWa = !!(groupData && groupData.whatsapp_link);
+    const waTitle = canWa ? '' : ' title="Save a WhatsApp group link for this group first"';
+
     bodyEl.innerHTML = msgs
       .map((m) => {
         const thumb = m.image_url
@@ -351,6 +430,13 @@ async function fetchSessionMessages(levelId, sessionNum) {
           : `<div class="message-copy-row">
                <button type="button" class="btn btn-sm btn-message-copy-text" data-copy="text" data-id="${m.id}">Copy Text 📝</button>
              </div>`;
+        const waBtn = `<div class="message-wa-row" style="margin-top:10px;">
+             <button type="button" class="btn btn-sm" data-wa-send data-group-id="${groupData.id}" data-msg-id="${m.id}"
+               style="background:#25D366;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:15px;width:100%;max-width:320px;"
+               ${canWa ? '' : 'disabled'}${waTitle}>
+               Send to WhatsApp Group 📤
+             </button>
+           </div>`;
 
         return `
           <div class="message-card animate-in" data-id="${m.id}">
@@ -361,6 +447,7 @@ async function fetchSessionMessages(levelId, sessionNum) {
             ${thumb}
             <div class="message-card-footer">
               ${copyRow}
+              ${waBtn}
             </div>
           </div>
         `;
@@ -376,6 +463,14 @@ async function fetchSessionMessages(levelId, sessionNum) {
         if (mode === 'all' && m.image_url) copyAll(m.message_text, m.image_url);
         else if (mode === 'text') copyText(m.message_text);
         else if (mode === 'image' && m.image_url) copyImage(m.image_url);
+      });
+    });
+
+    bodyEl.querySelectorAll('[data-wa-send]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const gid = parseInt(btn.dataset.groupId, 10);
+        const mid = parseInt(btn.dataset.msgId, 10);
+        sendToWhatsAppGroup(btn, gid, mid);
       });
     });
   } catch (err) {

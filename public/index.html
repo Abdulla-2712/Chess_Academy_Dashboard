@@ -56,8 +56,33 @@
     </div>
   </div>
 
+  <!-- Session Message Modal (auto-opens after confirm) -->
+  <div class="modal-overlay" id="session-message-modal" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="session-message-title">Session Message</h2>
+        <button class="modal-close" id="session-message-close">&times;</button>
+      </div>
+      <div id="session-message-body">
+        <div class="loading-container">
+          <div class="spinner"></div>
+        </div>
+      </div>
+      <div class="session-message-footer">
+        <button class="btn btn-primary btn-block" id="btn-open-whatsapp" type="button" title="">
+          Open WhatsApp Group 💬
+        </button>
+        <button class="btn btn-ghost btn-block" id="btn-close-session-message" type="button">
+          Close ✕
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-toast" id="app-toast"></div>
+
   <!-- Bottom Navigation -->
-  <nav class="bottom-nav bottom-nav-five">
+  <nav class="bottom-nav bottom-nav-six">
     <a href="/index.html" class="active">
       <span class="nav-icon">🏠</span>
       <span>Today</span>
@@ -77,6 +102,10 @@
     <a href="/holidays.html">
       <span class="nav-icon">🗓️</span>
       <span>Holidays</span>
+    </a>
+    <a href="/whatsapp-status.html">
+      <span class="nav-icon">📲</span>
+      <span>WhatsApp</span>
     </a>
   </nav>
 

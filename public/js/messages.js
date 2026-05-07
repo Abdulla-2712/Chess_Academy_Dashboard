@@ -103,25 +103,46 @@ function downloadImage(imageUrl) {
 }
 
 async function copyAll(messageText, imageUrl) {
-  const abs = absoluteMediaUrl(imageUrl);
   try {
-    const imageResponse = await fetch(abs);
-    const imageBlob = await imageResponse.blob();
+    const absoluteUrl = imageUrl.startsWith('http')
+      ? imageUrl
+      : window.location.origin + imageUrl;
+
+    const response = await fetch(absoluteUrl);
+    if (!response.ok) throw new Error('Failed to fetch image');
+
+    const blob = await response.blob();
+
+    // Convert to PNG for maximum clipboard compatibility
+    let finalBlob = blob;
+    if (blob.type !== 'image/png') {
+      const bitmap = await createImageBitmap(blob);
+      const canvas = document.createElement('canvas');
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(bitmap, 0, 0);
+      finalBlob = await new Promise((resolve) =>
+        canvas.toBlob(resolve, 'image/png')
+      );
+    }
+
     await navigator.clipboard.write([
       new ClipboardItem({
         'text/plain': new Blob([messageText], { type: 'text/plain' }),
-        [imageBlob.type]: imageBlob,
+        'image/png': finalBlob
       }),
     ]);
-    showToast('Text and image copied! ✅');
+    showToast('Text and image copied! ✅ Paste into WhatsApp');
   } catch (err) {
+    console.error('Copy all failed:', err);
     try {
       await navigator.clipboard.writeText(messageText);
     } catch (_) {
       /* still try download */
     }
     downloadImage(imageUrl);
-    showToast('Text copied + image downloading! ✅');
+    showToast('Text copied + image downloading ⬇️');
   }
 }
 
@@ -135,15 +156,37 @@ async function copyText(messageText) {
 }
 
 async function copyImage(imageUrl) {
-  const abs = absoluteMediaUrl(imageUrl);
   try {
-    const imageResponse = await fetch(abs);
-    const imageBlob = await imageResponse.blob();
-    await navigator.clipboard.write([new ClipboardItem({ [imageBlob.type]: imageBlob })]);
-    showToast('Image copied! ✅');
+    // Must use absolute URL
+    const absoluteUrl = imageUrl.startsWith('http')
+      ? imageUrl
+      : window.location.origin + (imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`);
+
+    const response = await fetch(absoluteUrl);
+
+    if (!response.ok) throw new Error('Failed to fetch image');
+
+    const blob = await response.blob();
+
+    // Force PNG for maximum clipboard compatibility
+    let finalBlob = blob;
+    if (blob.type !== 'image/png') {
+      const bitmap = await createImageBitmap(blob);
+      const canvas = document.createElement('canvas');
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(bitmap, 0, 0);
+      finalBlob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+    }
+
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': finalBlob })]);
+
+    showToast('Image copied to clipboard! ✅');
   } catch (err) {
+    console.error('Copy image failed:', err);
     downloadImage(imageUrl);
-    showToast('Image downloading! ✅');
+    showToast('Could not copy — image downloading instead ⬇️');
   }
 }
 

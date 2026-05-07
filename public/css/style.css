@@ -1173,6 +1173,16 @@ textarea.form-control {
   font-size: 1.1rem;
 }
 
+/* ===== Bottom nav — six items (e.g. WhatsApp setup) ===== */
+.bottom-nav-six a {
+  font-size: 0.55rem;
+  padding: var(--space-xs) 4px;
+}
+
+.bottom-nav-six .nav-icon {
+  font-size: 1rem;
+}
+
 /* ===== Messages Library ===== */
 .level-grid {
   display: grid;

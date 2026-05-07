@@ -26,7 +26,7 @@ router.get('/today', auth, async (req, res) => {
       `SELECT s.id, s.group_id, s.session_number,
               TO_CHAR(s.scheduled_date, 'YYYY-MM-DD') as scheduled_date,
               s.scheduled_time::text, s.status, s.notes, s.is_rescheduled,
-              g.name as group_name,
+              g.name as group_name, g.level_id, g.whatsapp_link,
               TO_CHAR(g.start_date, 'YYYY-MM-DD') as group_start_date,
               l.level_number, l.price_per_session
        FROM sessions s

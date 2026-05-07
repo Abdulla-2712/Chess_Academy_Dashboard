@@ -10,6 +10,8 @@ const sessionRoutes = require('./routes/sessions');
 const earningsRoutes = require('./routes/earnings');
 const holidayRoutes = require('./routes/holidays');
 const messageRoutes = require('./routes/messages');
+const whatsappRoutes = require('./routes/whatsapp');
+const { initWhatsApp } = require('./services/whatsapp');
 const pool = require('./db/pool');
 
 const app = express();
@@ -21,15 +23,15 @@ app.use(express.json());
 const uploadsDir = path.join(__dirname, 'uploads');
 fs.mkdirSync(path.join(uploadsDir, 'messages'), { recursive: true });
 app.use('/uploads', express.static(uploadsDir));
-app.use(express.static(path.join(__dirname, 'public')));
 
-// API routes
+// API routes (before public static so /api/* is never shadowed by files under public/)
 app.use('/api/auth', authRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/earnings', earningsRoutes);
 app.use('/api/holidays', holidayRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/whatsapp', whatsappRoutes);
 
 // Levels endpoint (public — needed for dropdowns)
 app.get('/api/levels', async (req, res) => {
@@ -41,6 +43,8 @@ app.get('/api/levels', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 // SPA fallback — serve index.html for any non-API route
 app.get('*', (req, res) => {
@@ -56,4 +60,5 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`♟️  Chess Trainer running on port ${PORT}`);
+  initWhatsApp();
 });

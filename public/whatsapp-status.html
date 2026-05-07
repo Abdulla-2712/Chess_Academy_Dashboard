@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhatsApp Connection — Chess Trainer</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    body { text-align: center; padding: 40px 16px 100px; }
+    .wa-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 40px; max-width: 400px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .wa-card img { max-width: 280px; margin: 20px auto; display: block; }
+    .status-ready { color: #22c55e; font-size: 24px; font-weight: bold; }
+    .status-waiting { color: #f59e0b; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <div class="wa-card">
+    <h1>♟️ WhatsApp Connection</h1>
+    <div id="content">Checking status...</div>
+    <p style="margin-top: 24px;"><a href="/index.html" style="color: var(--primary-light);">← Back to app</a></p>
+  </div>
+  <nav class="bottom-nav bottom-nav-six">
+    <a href="/index.html"><span class="nav-icon">🏠</span><span>Home</span></a>
+    <a href="/groups.html"><span class="nav-icon">👥</span><span>Groups</span></a>
+    <a href="/messages.html"><span class="nav-icon">📚</span><span>Messages</span></a>
+    <a href="/earnings.html"><span class="nav-icon">💰</span><span>Earnings</span></a>
+    <a href="/holidays.html"><span class="nav-icon">🗓️</span><span>Holidays</span></a>
+    <a href="/whatsapp-status.html" class="active"><span class="nav-icon">📲</span><span>WhatsApp</span></a>
+  </nav>
+  <script src="/js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!API.requireAuth()) return;
+
+      async function checkStatus() {
+        const content = document.getElementById('content');
+        try {
+          const data = await API.get('/whatsapp/status');
+
+          if (data.ready) {
+            content.innerHTML = '<div class="status-ready">✅ WhatsApp Connected!</div><p>You can close this page.</p>';
+          } else if (data.qr) {
+            content.innerHTML =
+              '<p class="status-waiting">📱 Scan this QR code with your WhatsApp Business app</p>' +
+              '<img src="' + data.qr + '" alt="QR Code" />' +
+              '<p>Open WhatsApp Business → Settings → Linked Devices → Link a Device</p>';
+          } else {
+            content.innerHTML = '<p class="status-waiting">⏳ Starting WhatsApp... please wait</p>';
+          }
+        } catch (e) {
+          const msg = e.message || 'unknown';
+          const hint =
+            msg.indexOf('API route not found') !== -1
+              ? '<br><br><small>Stop and start the Chess Trainer server again (so it loads the WhatsApp routes). Make sure this page is opened from the same address as the app (e.g. http://localhost:3000), not from another tool or an old tab.</small>'
+              : '';
+          content.innerHTML = '<p class="status-waiting">Error: ' + msg + hint + '</p>';
+        }
+      }
+
+      checkStatus();
+      setInterval(checkStatus, 3000);
+    });
+  </script>
+</body>
+</html>
